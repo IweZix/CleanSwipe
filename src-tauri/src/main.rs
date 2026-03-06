@@ -14,11 +14,15 @@ struct FileInfo {
     created_at: Option<String>,
     modified_at: Option<String>,
     is_image: bool,
+    file_type: String,
 }
 
 #[tauri::command]
-fn get_downloads() -> Vec<FileInfo> {
-    let downloads = dirs::download_dir().unwrap();
+fn get_downloads(folder: Option<String>) -> Vec<FileInfo> {
+    let downloads = folder
+        .and_then(|f| Some(std::path::PathBuf::from(f)))
+        .or_else(|| dirs::download_dir())
+        .unwrap();
     let mut files = Vec::new();
 
     for entry in fs::read_dir(downloads).unwrap() {
@@ -42,6 +46,14 @@ fn get_downloads() -> Vec<FileInfo> {
                     Some("png") | Some("jpg") | Some("jpeg") | Some("gif") | Some("webp")
                 );
 
+                let file_type = if metadata.is_dir() {
+                    "folder".to_string()
+                } else if let Some(ext) = path.extension().and_then(|e| e.to_str()) {
+                    ext.to_lowercase()
+                } else {
+                    "unknown".to_string()
+                };
+
                 files.push(FileInfo {
                     name,
                     path: path.to_string_lossy().to_string(),
@@ -49,6 +61,7 @@ fn get_downloads() -> Vec<FileInfo> {
                     created_at,
                     modified_at,
                     is_image,
+                    file_type,
                 });
             }
         }
@@ -113,7 +126,13 @@ fn open_in_finder(path: String) -> Result<(), String> {
 
 fn main() {
     tauri::Builder::default()
-        .invoke_handler(tauri::generate_handler![get_downloads, delete_file, read_file_base64, open_in_finder])
+        .plugin(tauri_plugin_dialog::init())
+        .invoke_handler(tauri::generate_handler![
+            get_downloads,
+            delete_file,
+            read_file_base64,
+            open_in_finder
+        ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
