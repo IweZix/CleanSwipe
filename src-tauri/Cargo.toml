@@ -1,5 +1,5 @@
 [package]
-name = "tinder-files"
+name = "CleanSwipe"
 version = "1.0.0"
 description = "A macOS app to quickly preview, sort, and delete downloaded files with swipe gestures, inspired by Tinder's UI."
 authors = ["Luca N."]
@@ -25,4 +25,5 @@ serde_json = "1"
 dirs = "5.0"
 chrono = "0.4.43"
 base64 = "0.22.1"
+tauri-plugin-dialog = "2.6.0"
 
