@@ -137,6 +137,14 @@ function App() {
     }
   };
 
+  const getFolderName = (path: string | null) => {
+    if (!path) return null;
+
+    const name = path.split("/").pop() || "";
+
+    return name.length > 10 ? name.slice(0, 10) + "..." : name;
+  };
+
   return (
   <VStack
     h="100vh"
@@ -151,9 +159,13 @@ function App() {
           Choose a folder
         </Button>
 
-        {folder && (
+        {folder ? (
           <Text fontSize="xs" color="blackAlpha.800">
-            Folder: {folder}
+            Folder: {getFolderName(folder)}
+          </Text>
+        ) : (
+          <Text fontSize="xs" color="blackAlpha.800">
+            No folder selected
           </Text>
         )}
       </VStack>
