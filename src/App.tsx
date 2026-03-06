@@ -152,7 +152,7 @@ function App() {
         </Button>
 
         {folder && (
-          <Text fontSize="xs" color="whiteAlpha.800">
+          <Text fontSize="xs" color="blackAlpha.800">
             Folder: {folder}
           </Text>
         )}
